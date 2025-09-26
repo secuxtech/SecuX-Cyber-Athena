@@ -62,7 +62,7 @@ export default function CreateWallet({ isNewUser = false }: { isNewUser?: boolea
   // Configuration state group
   const [config, setConfig] = useState({
     isNew: isNewUser,
-    hsmVaultUrl: "http://pufhsm2.itracxing.xyz",
+    hsmVaultUrl: "",
   });
 
 
@@ -253,7 +253,6 @@ export default function CreateWallet({ isNewUser = false }: { isNewUser?: boolea
             <span className="fw-bold align-middle" style={{ minWidth: 0, fontSize: "1rem" }}>HSM Vault: </span>
             <input
               type="text"
-              placeholder="e.g., http://pufhsm2.itracxing.xyz"
               value={config.hsmVaultUrl}
               onChange={e => setConfig(prev => ({ ...prev, hsmVaultUrl: e.target.value }))}
               className="form-control"
@@ -456,13 +455,6 @@ export default function CreateWallet({ isNewUser = false }: { isNewUser?: boolea
 
                     if (res.data && res.data.walletId) {
                       toast.success("Multisig wallet created successfully!\nBack to previous page.");
-
-                      try {
-                        await fetchHsmWalletUtils("faucet", res.data.address);
-                        toast.success("System has sent 1 testnet BTC to the new wallet.");
-                      } catch (faucetError) {
-                        console.error("Faucet call failed:", faucetError);
-                      }
 
                       if (config.isNew) {
                         setTimeout(() => router.push("/"), 2000);
