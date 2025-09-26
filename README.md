@@ -91,6 +91,7 @@ cd SecuX-Cyber-Athena
 
 # Install dependencies
 npm install
+npm run patch
 ```
 
 ### 2. Configuration
