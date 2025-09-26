@@ -168,7 +168,6 @@ secux-cyber-athena/
 │   └── schema.prisma     # Prisma database models
 ├── config/               # Application configuration
 │   └── index.ts          # Centralized constants & limits
-├── tests/                # API testing files
 └── public/               # Static assets (images, icons)
 ```
 
