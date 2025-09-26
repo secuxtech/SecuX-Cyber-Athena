@@ -1,64 +1,78 @@
 # SecuX Cyber Athena
 
-**Enterprise-grade Bitcoin multi-signature wallet with hardware security and FIDO2 authentication**
+**Bitcoin multi-signature wallet with hardware security and FIDO2 authentication**
 
-A comprehensive digital asset solution designed for small and medium-sized enterprises (SMEs), combining hardware security modules (HSM), passwordless authentication, and multi-signature governance to deliver institutional-level security with educational transparency.
+A comprehensive digital asset solution designed for small and medium-sized enterprises (SMEs), combining hardware security modules (HSM), passwordless authentication (FIDO), and multi-signature governance to deliver institutional-level security.
 
 [![Demo](https://img.shields.io/badge/🌐_Live_Demo-cyber--athena.vercel.app-blue)](https://cyber-athena.vercel.app)
 [![Next.js](https://img.shields.io/badge/Next.js-15.5.2-black)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://typescriptlang.org)
 [![Prisma](https://img.shields.io/badge/Prisma-6.16.2-2D3748)](https://prisma.io)
 
-## 🎯 Project Philosophy
-
-This project follows a **"small but secure"** philosophy, prioritizing:
-- **Educational Value**: Clean, well-documented code for learning blockchain and security concepts
-- **Security First**: Enterprise-grade security with multi-signature governance
-- **Simplicity**: Focused feature set that demonstrates core concepts effectively
-- **Transparency**: Open-source approach with detailed implementation explanations
-
 ## ✨ Core Features
 
-### 🔐 Advanced Security
 - **🗝️ Hardware Security Module (HSM)** - Secure key storage with PUF technology
 - **🛡️ FIDO2 Authentication** - Passwordless, phishing-resistant authentication
 - **📝 Multi-Signature Governance** - Require multiple approvals for transactions
 - **🔒 Zero-Trust Architecture** - Comprehensive input validation and rate limiting
 
-### 💼 Enterprise-Ready
-- **👥 Multi-User Management** - Support for multiple cosigners and roles
-- **📊 Transaction Monitoring** - Real-time transaction status and audit trails
-- **⚡ Rate Limiting** - Built-in API protection against abuse
-- **🏢 Compliance Features** - Audit logs and governance workflows
-
-### 🛠️ Developer Experience
-- **📚 Educational Codebase** - Well-commented code with learning resources
-- **🧪 Type Safety** - Full TypeScript implementation
-- **🎨 Modern UI/UX** - Bootstrap-based responsive design
-- **🔧 Easy Setup** - Streamlined development environment
-
 ## 🏗️ Architecture Overview
 
+SecuX Cyber Athena implements a layered architecture combining modern web technologies with enterprise-grade security modules:
+
 ```
+┌───────────────────────────────────────────────────────────────────────────┐
+│                          PRESENTATION LAYER                               │
+├─────────────────┬─────────────────┬─────────────────┬─────────────────────┤
+│   Frontend UI   │   Components    │    Modals       │    Forms            │
+│   (Next.js 15)  │                 │                 │                     │
+│ • React 18      │ • Dashboard     │ • FIDO2 Auth    │ • Wallet Creation   │
+│ • TypeScript    │ • Wallet Mgmt   │ • Confirmations │ • Transaction Forms │
+│ • Bootstrap 5   │ • Transactions  │ • Passphrases   │ • Input Validation  │
+└─────────────────┴─────────────────┴─────────────────┴─────────────────────┘
+                                    │
+                                    ▼
+┌───────────────────────────────────────────────────────────────────────────┐
+│                           API LAYER (Next.js)                             │
+├─────────────────┬─────────────────┬─────────────────┬─────────────────────┤
+│   Middleware    │   Authentication│    Validation   │    Rate Limiting    │
+│                 │                 │                 │                     │
+│ • CORS Headers  │ • JWT Tokens    │ • Zod Schemas   │ • IP-based Limits   │
+│ • Error Handler │ • FIDO2 WebAuthn│ • Input Sanitize│ • Endpoint Throttle │
+│ • Security      │ • Session Mgmt  │ • Type Safety   │ • DoS Protection    │
+└─────────────────┴─────────────────┴─────────────────┴─────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        BUSINESS LOGIC LAYER                             │
+├─────────────────┬─────────────────┬─────────────────┬───────────────────┤
+│   Wallet Mgmt   │   Transaction   │    HSM Ops      │    FIDO2 Flows    │
+│                 │                 │                 │                   │
+│ • Multi-sig     │ • Initiation    │ • Key Derivation│ • Registration    │
+│ • Key Derivation│ • Approval Flow │ • Signing       │ • Authentication  │
+│ • Address Gen   │ • Status Track  │ • Public Keys   │ • Challenge Store │
+└─────────────────┴─────────────────┴─────────────────┴───────────────────┘
+                         │                     │
+                         ▼                     ▼
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Frontend      │    │   Backend API   │    │   Database      │
-│   (Next.js)     │◄──►│   (Next.js API) │◄──►│   (PostgreSQL)  │
+│   Database      │    │   External HSM  │    │   Bitcoin RPC   │
+│  (PostgreSQL)   │    │  (SecuX Vault)  │    │   (Public Node) │
 │                 │    │                 │    │                 │
-│ • React UI      │    │ • JWT Auth      │    │ • User Data     │
-│ • FIDO2 Client  │    │ • Rate Limiting │    │ • Transactions  │
-│ • Form Handling │    │ • HSM Interface │    │ • Audit Logs    │
+│ • Users & Creds │    │ • Private Keys  │    │ • Balance Query │
+│ • Wallets       │    │ • Secure Signing│    │ • Tx Broadcast  │
+│ • Transactions  │    │ • PUF Technology│    │ • Fee Estimation│
+│ • Approvals     │    │ • Hardware Auth │    │ • Block Info    │
+│ • Audit Logs    │    │ • Tamper Resist │    │ • Mempool Data  │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
-                                │
-                                ▼
-                       ┌─────────────────┐
-                       │   External HSM  │
-                       │   (SecuX Vault) │
-                       │                 │
-                       │ • Key Storage   │
-                       │ • Signing       │
-                       │ • Multi-sig     │
-                       └─────────────────┘
 ```
+
+### Key Architectural Principles
+
+- **Zero-Trust Security**: All inputs validated, all communications authenticated
+- **Defense in Depth**: Multiple security layers (FIDO2, HSM, rate limiting, validation)
+- **Separation of Concerns**: Clear boundaries between UI, business logic, and data layers
+- **Hardware-Backed Security**: Private keys never leave the HSM environment
+- **Stateless API Design**: JWT-based authentication with no server-side sessions
 
 ## 📋 Prerequisites
 
@@ -79,21 +93,10 @@ cd SecuX-Cyber-Athena
 npm install
 ```
 
-### 2. Database Configuration
+### 2. Configuration
 ```bash
-# Copy environment configuration
+# Copy and edit environment configuration
 cp .env.example .env
-
-# Configure your PostgreSQL connection in .env
-# DATABASE_URL="postgresql://username:password@localhost:5432/secux_athena"
-```
-
-Edit `.env` file with your database credentials:
-```env
-DATABASE_URL="postgresql://username:password@localhost:5432/secux_athena"
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="your-secret-key-here"
-JWT_SECRET="your-jwt-secret-here"
 ```
 
 ### 3. Database Setup
@@ -119,51 +122,79 @@ Navigate to:
 - **Application**: http://localhost:3000
 - **Database Studio**: http://localhost:5555
 
-## 📖 Learning Guide
-
-This project is designed as an educational resource. Here's how to explore and learn from it:
-
-### 🎓 For Blockchain Beginners
-1. **Start with the UI** - Explore the wallet creation flow at `/create-wallet`
-2. **Understand Multi-sig** - See how 3 cosigners collaborate on transactions
-3. **Study FIDO2** - Learn about passwordless authentication in action
-
-### 🔧 For Developers
-1. **Architecture** - Study the clean separation between frontend/backend/database
-2. **Security Patterns** - Review input validation, rate limiting, and JWT handling
-3. **TypeScript Usage** - See how types improve code safety and documentation
-4. **Database Design** - Examine the Prisma schema for user and transaction modeling
-
-### 🏢 For Enterprise Users
-1. **Governance Workflows** - Understand how multi-signature approval works
-2. **Audit Trails** - See how transactions are logged and tracked
-3. **Security Controls** - Review rate limiting and input validation patterns
 
 ## 🛠️ Development Workflow
 
 ### Project Structure
 ```
 secux-cyber-athena/
-├── app/                    # Next.js 15 app directory
-│   ├── api/               # Backend API routes
-│   ├── components/        # React components
-│   └── globals.css        # Global styles
-├── lib/                   # Utility libraries
-│   ├── api-client.ts     # Frontend API client
-│   ├── form-validation.ts # Form validation utilities
-│   └── rate-limiter.ts   # Rate limiting middleware
-├── prisma/               # Database schema and migrations
-│   └── schema.prisma     # Database model definitions
+├── app/                  # Next.js 15 app directory (App Router)
+│   ├── api/              # Backend API routes
+│   │   ├── fido/         # FIDO2 WebAuthn endpoints
+│   │   ├── hsmwallet/    # HSM wallet operations
+│   │   ├── transaction/  # Transaction management
+│   │   └── user/         # User & authentication
+│   ├── components/       # React components
+│   │   ├── common/       # Shared UI components
+│   │   ├── feature/      # Feature-specific components
+│   │   │   ├── dashboard/# Dashboard & analytics
+│   │   │   ├── fido/     # FIDO2 authentication
+│   │   │   └── wallet/   # Wallet management
+│   │   ├── form/         # Form components
+│   │   ├── layout/       # Layout components
+│   │   ├── modals/       # Modal dialogs
+│   │   └── ui/           # Base UI components
+│   ├── create-wallet/    # Wallet creation page
+│   ├── dashboard/        # Main dashboard page
+│   ├── api-doc/          # Swagger API documentation
+│   └── globals.css       # Global styles
+├── lib/                  # Core business logic & utilities
+│   ├── api/              # API client & Swagger config
+│   ├── btc-multisig/     # Bitcoin multi-signature operations
+│   ├── db/               # Database connection (Prisma)
+│   ├── feature/          # Feature-specific logic
+│   │   ├── fido/         # FIDO2 operations & helpers
+│   │   ├── hsm/          # HSM connection management
+│   │   └── participant/  # Participant validation
+│   ├── middleware/       # API middleware (auth, CORS, security)
+│   └── utils/            # Utility functions
+│       ├── error-handler.ts    # Centralized error handling
+│       ├── field-encryption.ts # Field-level encryption
+│       ├── form-validation.ts  # Form validation schemas
+│       ├── input-validation.ts # API input validation
+│       ├── rate-limiter.ts     # Rate limiting
+│       └── secure-storage.ts   # Secure client storage
+├── prisma/               # Database schema & migrations
+│   └── schema.prisma     # Prisma database models
 ├── config/               # Application configuration
-│   └── constants.ts      # Centralized constants
-└── public/               # Static assets
+│   └── index.ts          # Centralized constants & limits
+├── tests/                # API testing files
+└── public/               # Static assets (images, icons)
 ```
 
 ### Key Components
-- **`CreateWallet.tsx`** - Multi-signature wallet creation interface
-- **`Dashboard.tsx`** - Main user interface with balance and transaction views
-- **`CosignerForm.tsx`** - Reusable form component for cosigner management
-- **`PendingTransactions.tsx`** - Transaction approval interface
+
+#### Frontend Components
+- **`Dashboard.tsx`** (`app/components/feature/dashboard/`) - Main user interface with portfolio analytics, balance views, and transaction management
+- **`CreateWallet.tsx`** (`app/components/feature/wallet/`) - Multi-signature wallet creation interface with HSM integration
+- **`FidoHandler.tsx`** (`app/components/feature/fido/`) - FIDO2 WebAuthn registration and authentication flows
+- **`PendingTransactions.tsx`** (`app/components/feature/wallet/`) - Transaction approval interface with multi-signature workflow
+- **`TransactionHistory.tsx`** (`app/components/feature/wallet/`) - Historical transaction viewer with filtering and pagination
+- **`CosignerForm.tsx`** (`app/components/form/`) - Reusable form component for cosigner management and validation
+
+#### API Endpoints
+- **`/api/hsmwallet/create-wallet`** - Multi-signature wallet creation with HSM key derivation
+- **`/api/hsmwallet/initiate-transaction`** - Transaction initiation with multi-signature approval workflow
+- **`/api/fido/register`** & **`/api/fido/authenticate`** - FIDO2 WebAuthn registration and authentication
+- **`/api/transaction/[id]`** - Transaction approval and status management
+- **`/api/user/multisig-wallet`** - User wallet management and participant operations
+
+#### Core Libraries
+- **`lib/btc-multisig/`** - Bitcoin multi-signature wallet operations, transaction creation, and key management
+- **`lib/feature/fido/fido-helpers.ts`** - FIDO2 WebAuthn helper functions with comprehensive error handling
+- **`lib/feature/hsm/hsm-connection.ts`** - Unified HSM connection management for secure key operations
+- **`lib/middleware/middleware.ts`** - JWT authentication, CORS, and request validation middleware
+- **`lib/utils/rate-limiter.ts`** - IP-based rate limiting for API protection against DoS attacks
 
 ### Available Scripts
 ```bash
@@ -176,42 +207,53 @@ npm run patch      # Apply patches (patch-package)
 
 ## 🔐 Security Features Explained
 
-### Multi-Signature Implementation
-- **3-of-3 Scheme**: All three cosigners must approve transactions
-- **Independent Verification**: Each cosigner validates transaction details
-- **Audit Trail**: Complete transaction history with approval status
+### Hardware Security Module (HSM) Integration
+- **PUF Technology**: Physical Unclonable Functions ensure unique device fingerprints
+- **Secure Key Storage**: Private keys never leave the HSM environment
+- **Hardware-Backed Signing**: All transaction signatures generated within tamper-resistant hardware
+- **Key Derivation**: Deterministic key generation using user passphrases and HSM salt
+- **Remote HSM Access**: Secure communication with external HSM vaults via encrypted channels
 
-### FIDO2 Integration
-- **WebAuthn API**: Browser-native authentication
-- **Hardware Binding**: Credentials tied to specific devices
-- **Phishing Resistance**: Origin validation prevents credential theft
+### Multi-Signature Wallet Architecture
+- **M-of-N Governance**: Configurable threshold signatures (e.g., 2-of-3, 3-of-5)
+- **Independent Key Generation**: Each participant's keys derived separately through HSM
+- **Transaction Approval Workflow**: Multi-step approval process with participant validation
+- **Audit Trail**: Complete transaction history with approval status and timestamps
+- **Secure Address Generation**: P2SH (Pay-to-Script-Hash) addresses for Bitcoin multi-signature
 
-### Input Validation
-- **Frontend Validation**: Real-time feedback with `lib/form-validation.ts`
-- **Backend Validation**: Server-side validation for all API endpoints
-- **Type Safety**: TypeScript ensures data integrity
+### FIDO2 WebAuthn Authentication
+- **Passwordless Authentication**: Hardware-backed biometric or PIN authentication
+- **Hardware Binding**: Credentials cryptographically tied to specific authenticator devices
+- **Phishing Resistance**: Origin validation and challenge-response prevents credential theft
+- **Public Key Cryptography**: Asymmetric encryption ensures credentials never travel over network
+- **Device Roaming**: Support for cross-platform authenticators with proper credential management
 
-### Rate Limiting
-- **API Protection**: Prevents brute force and DoS attacks
-- **Configurable Limits**: Different rates for different endpoints
-- **Memory-based**: Simple implementation suitable for development
+### Comprehensive Input Validation
+- **Frontend Validation**: Real-time validation with `lib/form-validation.ts` using Zod schemas
+- **API Input Validation**: Server-side validation for all endpoints with `lib/utils/input-validation.ts`
+- **Type Safety**: Full TypeScript coverage ensures compile-time data integrity
+- **Sanitization**: Input sanitization prevents XSS and injection attacks
+- **Business Logic Validation**: Domain-specific validation (Bitcoin addresses, amounts, etc.)
 
-## 🧪 Testing & Quality
+### Multi-Layer Rate Limiting
+- **IP-based Protection**: `lib/utils/rate-limiter.ts` prevents brute force and DoS attacks
+- **Endpoint-Specific Limits**: Different rate limits for sensitive operations (auth, transactions)
+- **Sliding Window**: Time-based rate limiting with configurable windows and thresholds
+- **Memory-based Storage**: Development-friendly rate limiting with optional Redis scaling
 
-### Code Quality
-- **TypeScript**: Full type coverage for reliability
-- **ESLint**: Consistent code style and error prevention
-- **Prettier**: Automated code formatting
+### API Security Architecture
+- **JWT Authentication**: Stateless token-based authentication with configurable expiration
+- **CORS Protection**: Strict origin validation with whitelist-based access control
+- **Security Headers**: Comprehensive security headers via `lib/middleware/security-headers.ts`
+- **Error Handling**: Unified error handling that prevents information leakage
+- **Request Validation**: Zod-based schema validation for all API inputs
 
-### Security Testing
-- **Input Validation**: Test form validation with edge cases
-- **FIDO2 Flow**: Verify authentication and registration flows
-- **Multi-sig Logic**: Test transaction approval workflows
-
-### Browser Compatibility
-- **WebAuthn Support**: Requires modern browsers (Chrome 67+, Firefox 60+, Safari 14+)
-- **Responsive Design**: Works on desktop and mobile devices
-- **Progressive Enhancement**: Graceful fallbacks where possible
+### Database Security
+- **Field-Level Encryption**: Sensitive data encrypted using `lib/utils/field-encryption.ts`
+- **Secure Storage**: Client-side secure storage with `lib/utils/secure-storage.ts`
+- **Data Integrity**: Prisma ORM with type-safe database operations
+- **Access Control**: Role-based access control through participant validation
+- **Audit Logging**: Complete audit trail for all user actions and system events
 
 ## 🤝 Contributing
 
@@ -249,8 +291,6 @@ Security is our top priority. If you discover a security vulnerability, please r
 
 - **SecuX Technology** - Hardware security expertise and HSM integration
 - **WebAuthn/FIDO2** - Standards for passwordless authentication
-- **Next.js & Vercel** - Modern web development platform
-- **Prisma** - Type-safe database toolkit
 - **Open Source Community** - Libraries and tools that make this project possible
 
 ## 📞 Support & Community

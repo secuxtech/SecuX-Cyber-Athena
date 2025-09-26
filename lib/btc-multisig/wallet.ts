@@ -7,6 +7,7 @@ import { SecuxPsbt } from "@secux/app-btc/lib/psbt";
 import { HexString, Transaction, TransactionStatus, Wallet } from "./interface";
 import { kvStore, generateWalletId, config } from "./utils";
 import * as utils from "./utils";
+import { generateNewUTXOBlocks } from "./testnet";
 
 export async function createMultisigWallet(params: {
   m: number,
@@ -139,12 +140,14 @@ export async function getWalletBalance(walletId: string) {
     throw new Error(`Wallet not found: ${walletId}`);
   }
 
+  await generateNewUTXOBlocks();
+
   try {
     const response = await fetch(config.rpcUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Basic ${Buffer.from(process.env.BTC_RPC_SECRET!).toString("base64")}`,
+        Authorization: `Basic ${Buffer.from(process.env.TEST_RPC_AUTH!).toString("base64")}`,
       },
       body: JSON.stringify({
         method: "scantxoutset",

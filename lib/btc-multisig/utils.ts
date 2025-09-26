@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import axios from "axios";
 import { db } from "@/lib/db/prisma";
 import { sha256 } from "hash.js";
 import { CoinType, ScriptType, SecuxBTC } from "@secux/app-btc";
 import { Base58 } from "@secux/utility/lib/bs58";
 import { HexString, Wallet } from "./interface";
 import { getByteCount } from "./getByteCount";
+import { generateNewUTXOBlocks } from "./testnet";
 
 export const config = {
   network: CoinType.REGTEST, // NOTE: Use CoinType.BITCOIN for mainnet
@@ -75,7 +75,7 @@ async function bitcoinRpcCall(method: string, params: any[]) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Basic ${Buffer.from(process.env.BTC_RPC_SECRET!).toString("base64")}`,
+      Authorization: `Basic ${Buffer.from(process.env.TEST_RPC_AUTH!).toString("base64")}`,
     },
     body: JSON.stringify({
       jsonrpc: "2.0",
@@ -110,11 +110,13 @@ async function blockbookApiCall(path: string) {
 }
 
 export async function broadcastTransaction(signedTransaction: HexString) {
+  await generateNewUTXOBlocks();
+
   const response = await fetch(config.rpcUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Basic ${Buffer.from(process.env.BTC_RPC_SECRET!).toString("base64")}`,
+      Authorization: `Basic ${Buffer.from(process.env.TEST_RPC_AUTH!).toString("base64")}`,
     },
     body: JSON.stringify({
       jsonrpc: "1.0",

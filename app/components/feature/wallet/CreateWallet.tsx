@@ -330,7 +330,8 @@ export default function CreateWallet({ isNewUser = false }: { isNewUser?: boolea
               validatePassphrase={validatePassphrase}
               validatePassphraseMatch={validatePassphraseMatch}
             />
-
+          </div>
+          <div className="row">
             <CosignerForm
               cosignerNumber={2}
               cosigner={cosigner2}

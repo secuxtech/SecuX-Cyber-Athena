@@ -45,7 +45,7 @@ export default function CosignerForm({
   validatePassphraseMatch,
 }: CosignerFormProps) {
   return (
-    <div className="col-lg-6 col-md-6 mb-3">
+    <div className="col-lg-12 col-md-12 mb-3">
       <div className="card h-100 shadow-sm">
         <div className="card-header">
           <h6 className="mb-0">
