@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  accountId             String  @id
+  credentials           Credential[]
+  initiatedTransactions Transaction[]
+  multisigSigners       MultisigParticipant[]
+  approvals             TransactionApproval[]
+}
+
+model Credential {
+  credentialId    String  @id
+  userAid         String
+  publicKey       String  @unique
+  counter         Int
+  user            User    @relation(fields: [userAid], references: [accountId], onDelete: Cascade)
+  createdAt       DateTime  @default(now())
+}
+
+model MultisigWallet {
+  id                Int       @id @default(autoincrement())
+  name              String
+  walletId          String    @unique
+  address           String    @unique
+  hsmVault          String
+  blockchain        String
+  totalParticipants Int
+  threshold         Int
+  participants      MultisigParticipant[]
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime? @updatedAt
+}
+
+model MultisigParticipant {
+  id                Int              @id @default(autoincrement())
+  multisigWalletId  Int
+  userAid           String
+  multisigWallet    MultisigWallet   @relation(fields: [multisigWalletId], references: [id], onDelete: Cascade)
+  user              User             @relation(fields: [userAid], references: [accountId], onDelete: Cascade)
+  createdAt         DateTime         @default(now())
+
+  @@unique([multisigWalletId, userAid])
+}
+
+model Transaction {
+  id              Int                   @id @default(autoincrement())
+  initiatorId     String
+  operation       Operation             @default(TRANSFER)
+  asset           Asset
+  amount          Decimal               @db.Decimal(30, 8)
+  recipient       String
+  status          TransactionStatus     @default(PENDING)
+  approvalCount   Int                   @default(1)
+  requiredCount   Int                   @default(2)
+  transactionId   String?
+  transactionHash String?
+  approvals       TransactionApproval[]
+  hsmVault        String
+  walletId        String
+  initiator       User                  @relation(fields: [initiatorId], references: [accountId])
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime?             @updatedAt
+}
+
+model TransactionApproval {
+  txSN            Int
+  approverId      String
+  status          ApprovalStatus @default(INITIATED) 
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime?      @updatedAt
+
+  transaction     Transaction    @relation(fields: [txSN], references: [id], onDelete: Cascade)
+  approver        User           @relation(fields: [approverId], references: [accountId], onDelete: Cascade)
+
+  @@unique([txSN, approverId])
+}
+
+model Challenge {
+  id         String   @id @default(uuid())
+  accountId  String   @unique
+  challenge  String
+  createdAt  DateTime @default(now())
+}
+
+model KeyValue {
+  key       String    @id
+  value     Json
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+enum Operation {
+  TRANSFER
+}
+
+enum Asset {
+  BTC
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+  FAILED
+}
+
+enum ApprovalStatus {
+  INITIATED
+  APPROVED
+}
